@@ -101,9 +101,13 @@ function animate() {
     
     var info = document.getElementById("info");
     if (!!info) {
-        var infoText = `CameraVelocity: x=${cameraVelocity.x}, y=${cameraVelocity.y}, z=${cameraVelocity.z}\n`
-        
-         + `Rotation: x=${rotation.x}, y=${rotation.y}, z=${rotation.z}`
+        var infoText = 
+        `Camera\n` + 
+        `Position: x = ${cameraVelocity.x} | y = ${cameraVelocity.y} | z = ${cameraVelocity.z}\n` + 
+        `\n` +
+        `Cube\n` + 
+        `Rotation: x = ${rotation.x} | y = ${rotation.y} | z = ${rotation.z}`
+
         info.innerText = infoText
     }
 
