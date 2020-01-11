@@ -74,6 +74,17 @@ var cubeWidth = 1;
 var cube = createCubeMesh(cubeWidth, cubeWidth, cubeWidth, 0x00ff00)
 var cubes = [cube];
 
+var vectorArray = [
+    null,
+    new THREE.Vector3(0, 1, 0),
+    new THREE.Vector3(1, 0, 0),
+    new THREE.Vector3(0, 0, 1),
+    new THREE.Vector3(0, 0, 1),
+    new THREE.Vector3(1, 0, 0),
+    new THREE.Vector3(0, 1, 0),
+    null
+]
+
 function someFractalFunction(cubes, cubeWidth, maxDepth, depth) {
     depth = depth + 1;
 
@@ -82,37 +93,11 @@ function someFractalFunction(cubes, cubeWidth, maxDepth, depth) {
     for (var i = 0; i < numCubes; i++) {
         var subcubes = []
 
-        var vectorArray = [
-            null,
-            new THREE.Vector3(0, 1, 0),
-            new THREE.Vector3(1, 0, 0),
-            new THREE.Vector3(0, 0, 1),
-            new THREE.Vector3(0, 0, 1),
-            new THREE.Vector3(1, 0, 0),
-            new THREE.Vector3(0, 1, 0),
-            null
-        ]
-
         var index = 0;
         for (var x = -1; x <= 1; x += 2) {
             for (var y = -1; y <= 1; y += 2) {
                 for (var z = -1; z <= 1; z += 2) {
-                    // if (depth > 1) {
-                    //     if (i == 0 ||
-                    //         i == 1 ||
-                    //         i == 2 ||
-                    //         i == 4) {
-                    //         if (index == 7) {
-                    //             index++
-                    //             continue;
-                    //         }
-                    //     } else {
-                    //         if (index == 0) {
-                    //             index++
-                    //             continue;
-                    //         }
-                    //     }
-                    // }
+                    var offset = ((i + index) % 8)
 
                     var subcube = createCubeMesh(width, width, width)
 
@@ -133,7 +118,7 @@ function someFractalFunction(cubes, cubeWidth, maxDepth, depth) {
 
         cubes[i].add(...subcubes);
 
-        if (depth <= maxDepth) {
+        if (depth < maxDepth) {
             someFractalFunction(subcubes, width, maxDepth, depth)
         }
     }
@@ -148,16 +133,24 @@ function fractalAnimateFunction(cubes, depth) {
             var vector = new THREE.Vector3(1, 1, 1);
             var normalisedVector = vector.normalize();
             cube.rotateOnAxis(normalisedVector, 0.01 * depth);
-            fractalAnimateFunction(cube.children, depth)
+            fractalAnimateFunction(cube.children, depth);
+           
+            var parent = cube.parent;
+            var vector = new THREE.Vector3( cube.position.x, cube.position.y, cube.position.z )
+            vector.normalize();
+
+            cube.position.x += vector.x * cameraVelocity.x
+            cube.position.y += vector.y * cameraVelocity.x;
+            cube.position.z += vector.z * cameraVelocity.x;
         }
     }
 }
 
-var subcubes = someFractalFunction(cubes, cubeWidth, 2, 0);
+var subcubes = someFractalFunction(cubes, cubeWidth, 3, 0);
 
 scene.add(cube);
 
-camera.position.z = 5;
+camera.position.z = 6;
 
 function animate() {
     requestAnimationFrame(animate);
@@ -181,8 +174,8 @@ function animate() {
     cameraVelocity.y += cameraAcceleration.y;
     cameraVelocity.z += cameraAcceleration.z;
 
-    camera.position.x += cameraVelocity.x;
-    camera.position.y += cameraVelocity.y;
+    // camera.position.x += cameraVelocity.x;
+    // camera.position.y += cameraVelocity.y;
     camera.position.z += cameraVelocity.z;
 
     if (cameraVelocity.x != 0) cameraVelocity.x /= 1.15
