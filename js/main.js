@@ -74,9 +74,11 @@ var cubeWidth = 1;
 var cube = createCubeMesh(cubeWidth, cubeWidth, cubeWidth, 0x00ff00)
 var cubes = [cube];
 
-function someFractalFunction(cubes, cubeWidth) {
+function someFractalFunction(cubes, cubeWidth, maxDepth, depth) {
+    depth = depth + 1;
+
     var numCubes = cubes.length;
-    var width = cubeWidth / 2;
+    var width = cubeWidth / 3;
     for (var i = 0; i < numCubes; i++) {
         var subcubes = []
 
@@ -95,6 +97,23 @@ function someFractalFunction(cubes, cubeWidth) {
         for (var x = -1; x <= 1; x += 2) {
             for (var y = -1; y <= 1; y += 2) {
                 for (var z = -1; z <= 1; z += 2) {
+                    // if (depth > 1) {
+                    //     if (i == 0 ||
+                    //         i == 1 ||
+                    //         i == 2 ||
+                    //         i == 4) {
+                    //         if (index == 7) {
+                    //             index++
+                    //             continue;
+                    //         }
+                    //     } else {
+                    //         if (index == 0) {
+                    //             index++
+                    //             continue;
+                    //         }
+                    //     }
+                    // }
+
                     var subcube = createCubeMesh(width, width, width)
 
                     subcubes.push(subcube);
@@ -113,11 +132,14 @@ function someFractalFunction(cubes, cubeWidth) {
         }
 
         cubes[i].add(...subcubes);
+
+        if (depth <= maxDepth) {
+            someFractalFunction(subcubes, width, maxDepth, depth)
+        }
     }
 }
 
 function fractalAnimateFunction(cubes, depth) {
-    // debugger;
     if (!!cubes) {
         depth = depth + 1;
         var numCubes = cubes.length;
@@ -131,7 +153,7 @@ function fractalAnimateFunction(cubes, depth) {
     }
 }
 
-var subcubes = someFractalFunction(cubes, cubeWidth);
+var subcubes = someFractalFunction(cubes, cubeWidth, 2, 0);
 
 scene.add(cube);
 
@@ -170,7 +192,7 @@ function animate() {
     if (cameraVelocity.x < 0.001 && cameraVelocity.x > -0.001) cameraVelocity.x = 0
     if (cameraVelocity.y < 0.001 && cameraVelocity.y > -0.001) cameraVelocity.y = 0
     if (cameraVelocity.z < 0.001 && cameraVelocity.z > -0.001) cameraVelocity.z = 0
-    
+
     fractalAnimateFunction(cubes, 0)
 
 }
