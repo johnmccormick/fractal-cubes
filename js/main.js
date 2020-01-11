@@ -9,7 +9,7 @@ document.body.appendChild(renderer.domElement);
 
 function createCubeMesh(x, y, z, color) {
     var geometry = new THREE.BoxGeometry(x, y, z);
-    var material = new THREE.MeshBasicMaterial({ color });
+    var material = new THREE.MeshNormalMaterial({ color });
     var cube = new THREE.Mesh(geometry, material);
     return cube;
 }
