@@ -157,7 +157,13 @@ function fractalAnimateFunction(cubes, depth, deltaTime) {
     }
 }
 
-var subcubes = someFractalFunction(cubes, cubeWidth, 2, 0);
+const urlParams = new URLSearchParams(window.location.search);
+var depth = urlParams.get('depth');
+if (!Number(depth)) {
+    depth = 2;
+}
+
+var subcubes = someFractalFunction(cubes, cubeWidth, depth, 0);
 
 scene.add(cube);
 

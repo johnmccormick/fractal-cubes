@@ -29,9 +29,37 @@
                     Middle Mouse - Zoom in/out<br />
 
                     A/D - Expand/contract fractal<br />
+                    <br />
+                    Depth:
+                    <input id="depth-input" type="number"/>
                 </div>
                 <div id="info"></div>
             </div>
+        <script>
+
+        var depth = urlParams.get('depth');
+        if (!Number(depth)) {
+            depth = 2;
+        }
+
+        const depthInput = document.getElementById("depth-input");
+        depthInput.value = depth;
+
+        depthInput.addEventListener("input", (e) => {
+            var newDepth = e.target.value;
+            if (!!Number(newDepth) && newDepth > 0) {
+                var url = new URL(window.location.href);
+                var query_string = url.search;
+                var search_params = new URLSearchParams(query_string); 
+
+                search_params.set('depth', newDepth);
+
+                url.search = search_params.toString();
+                var new_url = url.toString();
+
+                window.location.href = new_url;
+            } 
+        })
         </script>
     </body>
 </html>
