@@ -1,11 +1,13 @@
 var scene = new THREE.Scene();
-var cameraDolly = new THREE.Object3D();
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-// cameraDolly.add(camera);
 
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+
+var controls = new THREE.OrbitControls( camera, renderer.domElement );
+
+controls.enablePan = false
 
 function createCubeMesh(x, y, z) {
     var geometry = new THREE.BoxGeometry(x, y, z);
@@ -21,7 +23,6 @@ function toRadians(degrees) {
 
 var cameraVelocity = { x: 0, y: 0, z: 0 }
 var movementVelocity = 0;
-// var cameraRotVelocity = { x: 0, y: 0, z: 0 }
 
 var cameraAcceleration = { x: 0, y: 0, z: 0 }
 var movementAcceleration = 0;
@@ -65,6 +66,12 @@ document.body.addEventListener("keyup", e => {
 
 })
 
+window.onresize = () => {
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix()
+}
 
 // document.body.addEventListener("mousemove", e => {
 //     var xVelocity = e.movementX;
@@ -150,11 +157,12 @@ function fractalAnimateFunction(cubes, depth, deltaTime) {
     }
 }
 
-var subcubes = someFractalFunction(cubes, cubeWidth, 3, 0);
+var subcubes = someFractalFunction(cubes, cubeWidth, 2, 0);
 
 scene.add(cube);
 
 camera.position.z = 6;
+controls.update();
 
 var clock = new THREE.Clock()
 function animate() {
@@ -164,15 +172,15 @@ function animate() {
 
     var info = document.getElementById("info");
     if (!!info) {
-        var infoText =
-            `Camera\n` +
-            `Position: x = ${camera.position.x.toFixed(2)} | y = ${camera.position.y.toFixed(2)} | z = ${camera.position.z.toFixed(2)}\n` +
-            `Velocity: x = ${cameraVelocity.x.toFixed(2)} | y = ${cameraVelocity.y.toFixed(2)} | z = ${cameraVelocity.z.toFixed(2)}\n` +
-            `\n` +
-            `Cube\n` +
+        var innerHTML =
+            `<b>Camera</b><br />` +
+            `Position: x = ${camera.position.x.toFixed(2)} | y = ${camera.position.y.toFixed(2)} | z = ${camera.position.z.toFixed(2)}<br />` +
+            // `Velocity: x = ${cameraVelocity.x.toFixed(2)} | y = ${cameraVelocity.y.toFixed(2)} | z = ${cameraVelocity.z.toFixed(2)}<br />` +
+            `<br />` +
+            `<b>Cube</b><br />` +
             `Rotation: x = ${cube.rotation.x.toFixed(2)} | y = ${cube.rotation.y.toFixed(2)} | z = ${cube.rotation.z.toFixed(2)}`
 
-        info.innerText = infoText
+        info.innerHTML = innerHTML
     }
 
     cameraVelocity.x += cameraAcceleration.x;
@@ -184,6 +192,8 @@ function animate() {
     camera.position.x += cameraVelocity.x * deltaTime;
     camera.position.y += cameraVelocity.y * deltaTime;
     camera.position.z += cameraVelocity.z * deltaTime;
+
+    controls.update();
 
     if (cameraVelocity.x != 0) cameraVelocity.x /= 1.15
     if (cameraVelocity.y != 0) cameraVelocity.y /= 1.15
